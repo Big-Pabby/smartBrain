@@ -117,6 +117,17 @@ class App extends Component {
 
   onButtonSubmit = () => {
     this.setState({imageUrl: this.state.input})
+    fetch('http://localhost:3001/image', {
+      method: 'put',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+          id: this.state.user.id
+      })
+    })
+    .then(response => response.json())
+    .then(count => {
+      this.setState(Object.assign(this.state.user, {entries: count}))
+    })
   }
 
   onRouteChange = (route) => {
@@ -139,13 +150,13 @@ class App extends Component {
         { this.state.route === 'home'
           ? <div>
             <Logo />
-            <Rank />
+            <Rank Username={this.state.user.name} entries={this.state.user.entries} />
             <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit} />
             <FaceRecognition imageUrl={this.state.imageUrl} />
           </div>
           : (
             this.state.route === 'signIn' 
-            ? <Signin onRouteChange={this.onRouteChange} />
+            ? <Signin loadUser={this.loadUser} onRouteChange={this.onRouteChange} />
             : <Register loadUser={this.loadUser} onRouteChange={this.onRouteChange} />
           )
           
